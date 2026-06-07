@@ -1,7 +1,11 @@
-function [m, s, g] = MapEasy %create_easy_map()
+function [m, s, g] = MapEasy()
     m = zeros(30, 30);
-    s = [2, 10];
-    g = [26, 25];
+    m(1, :) = 1;
+    m(30, :) = 1;
+    m(:, 1) = 1;
+    m(:, 30) = 1;
+    s = [2, 2];
+    g = [29, 29];
     
     obs = [
         10, 4,  8, 4;  % Clump 1

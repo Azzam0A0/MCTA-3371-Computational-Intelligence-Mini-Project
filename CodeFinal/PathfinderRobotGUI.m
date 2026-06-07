@@ -491,8 +491,12 @@ end
 
 function [m, s, g] = create_easy_map()
     m = zeros(30, 30);
-    s = [2, 10];
-    g = [26, 25];
+    m(1, :) = 1;
+    m(30, :) = 1;
+    m(:, 1) = 1;
+    m(:, 30) = 1;
+    s = [2, 2];
+    g = [29, 29];
     
     obs = [
         10, 4,  8, 4;  % Clump 1
@@ -521,12 +525,16 @@ end
 
 function [m, s, g] = create_hard_map()
     m = zeros(30, 30);
+    m(1, :) = 1;
+    m(30, :) = 1;
+    m(:, 1) = 1;
+    m(:, 30) = 1;
     s = [2, 2]; 
-    g = [28, 28]; 
+    g = [29, 29]; 
     
     layers = [7, 13, 19, 25];
     gates = [9, 18, 27, 21];
-    gate_width = 5;
+    gate_width = 3;
     
     for i = 1:length(layers)
         row = layers(i);
@@ -544,21 +552,25 @@ function display_comparison(ax, map_grid, goal, results, mapName)
     cla(ax);
     cmap = [1 1 1; 0.2 0.2 0.2; 0 1 0; 1 0 0];
     colormap(ax, cmap);
-    imagesc(ax, map_grid);
+    
+    imagesc(ax, flipud(map_grid)); 
     axis(ax, 'equal', 'tight');
+    
+    set(ax, 'YDir', 'normal'); 
     hold(ax, 'on');
+    [rows, ~] = size(map_grid);
     
     if isfield(results, 'fuzzy') && ~isempty(results.fuzzy.path)
-        plot(ax, results.fuzzy.path(:,2), results.fuzzy.path(:,1), ...
+        plot(ax, results.fuzzy.path(:,2), rows - results.fuzzy.path(:,1) + 1, ...
              'r-', 'LineWidth', 2, 'DisplayName', 'Fuzzy Only');
     end
     
     if isfield(results, 'hybrid') && ~isempty(results.hybrid.path)
-        plot(ax, results.hybrid.path(:,2), results.hybrid.path(:,1), ...
+        plot(ax, results.hybrid.path(:,2), rows - results.hybrid.path(:,1) + 1, ...
              'b-', 'LineWidth', 2, 'DisplayName', 'Hybrid GA-Fuzzy');
     end
     
-    plot(ax, goal(2), goal(1), 'k*', 'MarkerSize', 20, 'LineWidth', 2, ...
+    plot(ax, goal(2), rows - goal(1) + 1, 'k*', 'MarkerSize', 20, 'LineWidth', 2, ...
          'DisplayName', 'Goal');
     
     title(ax, sprintf('%s - Algorithm Comparison', mapName));
@@ -569,17 +581,20 @@ function display_single_result(ax, map_grid, goal, path, metrics, algoName, mapN
     cla(ax);
     cmap = [1 1 1; 0.2 0.2 0.2; 0 1 0; 1 0 0];
     colormap(ax, cmap);
-    imagesc(ax, map_grid);
+    
+    imagesc(ax, flipud(map_grid)); 
     axis(ax, 'equal', 'tight');
     
+    set(ax, 'YDir', 'normal'); 
     hold(ax, 'on'); 
+    [rows, ~] = size(map_grid);
     
     if ~isempty(path)
-        plot(ax, path(:,2), path(:,1), 'b-', 'LineWidth', 2.5);
-        plot(ax, path(:,2), path(:,1), 'bo', 'MarkerSize', 6, 'MarkerFaceColor', 'b');
+        plot(ax, path(:,2), rows - path(:,1) + 1, 'b-', 'LineWidth', 2.5);
+        plot(ax, path(:,2), rows - path(:,1) + 1, 'bo', 'MarkerSize', 6, 'MarkerFaceColor', 'b');
     end
     
-    plot(ax, goal(2), goal(1), 'r*', 'MarkerSize', 25, 'LineWidth', 3);
+    plot(ax, goal(2), rows - goal(1) + 1, 'r*', 'MarkerSize', 25, 'LineWidth', 3);
     title(ax, sprintf('%s - %s\nGoal Reached: %s | Length: %d | Smooth: %.1f%%', ...
                       mapName, algoName, upper(mat2str(metrics.goal_reached)), ...
                       metrics.path_length, metrics.smoothness));

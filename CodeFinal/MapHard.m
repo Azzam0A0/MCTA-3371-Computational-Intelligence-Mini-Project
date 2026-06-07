@@ -1,11 +1,15 @@
-function [m, s, g] = MapHard %create_hard_map()
+function [m, s, g] = MapHard()
     m = zeros(30, 30);
+    m(1, :) = 1;
+    m(30, :) = 1;
+    m(:, 1) = 1;
+    m(:, 30) = 1;
     s = [2, 2]; 
-    g = [28, 28]; 
+    g = [29, 29]; 
     
     layers = [7, 13, 19, 25];
     gates = [9, 18, 27, 21];
-    gate_width = 5;
+    gate_width = 3;
     
     for i = 1:length(layers)
         row = layers(i);
